@@ -3,7 +3,8 @@
     <v-slide-y-transition mode="out-in">
       <v-layout column align-center>
         <!-- <img src="@/assets/logo.png" alt="Vuetify.js" class="mb-5"> -->
-        <p class="text-md-center count font-kai">距离 2019 年研究生入学考试还有 <b><u>{{restDays}}</u></b> 天。 </p>
+        <p class="text-md-center count-title font-kai">距离 2019 年研究生入学考试还有:</p>
+        <p class="text-md-center count font-kai"> <b><u>{{restDays.days}}</u></b> 天 <b><u>{{restDays.hours}}</u></b> 小时 <b><u>{{restDays.mins}}</u></b> 分钟 <b><u>{{restDays.secs}}</u></b> 秒。</p>
         <blockquote class="font-fang-song blockquote">
               <p>&#8220;{{blockquote.quote}}&#8221;</p>
           <footer>
@@ -25,6 +26,7 @@ export default {
   },
   data() {
     return {
+      dateNow: new Date(),
       countDown: 199,
       quotes: [
         {
@@ -53,23 +55,50 @@ export default {
       var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       // var firstDate = new Date();
       // var secondDate = new Date(2018,12,22);
-      var now = this.$time();
-      var kaoyan = this.$time("2018-12-22T09:00:00Z");
-      var diffDays = Math.round(Math.abs((kaoyan - now) / oneDay));
-      return diffDays;
+      // let now = new Date();
+      let kaoyan = new Date(Date.UTC(2018, 11, 22, 1, 0, 0));
+      let differ = kaoyan - this.dateNow;
+      let diffDays = Math.floor(Math.abs(differ / oneDay));
+      differ = differ - oneDay * diffDays;
+      let diffHours = Math.floor(Math.abs(differ / (3600 * 1000)));
+      differ = differ - 3600 * 1000 * diffHours;
+      let diffMins = Math.floor(Math.abs(differ / (60 * 1000)));
+      differ = differ - 60 * 1000 * diffMins;
+      let diffSecs = Math.ceil(Math.abs(differ / 1000));
+      let result = {
+        days: diffDays,
+        hours: diffHours,
+        mins: diffMins,
+        secs: diffSecs
+      };
+      return result;
     },
     blockquote: function() {
       return this.quotes[Math.floor(Math.random() * this.quotes.length)];
     }
+  },
+  methods: {
+    setTime: function() {
+      let that = this;
+      this.dateNow = new Date();
+      setInterval(that.setTime, 1000);
+    }
+  },
+  mounted: function() {
+    this.setTime();
   }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.count-title {
+  font-size: 2rem;
+  margin-top: 8rem;
+}
 .count {
   font-size: 5rem;
-  margin: 10rem auto;
+  margin: 2rem auto;
 }
 h3 {
   margin: 40px 0 0;
